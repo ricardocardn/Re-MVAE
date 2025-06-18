@@ -1,0 +1,12 @@
+def evaluate_fashion_mnist_accuracy(image_model, text_model, loader, tokenizer, device, results_dir):
+    print("\nEvaluating Mixed Fashion MNIST Accuracy...")
+    evaluator = MixedFashionMNISTEvaluator(
+        image_model, text_model, loader, tokenizer, device=device
+    )
+    image_to_text_acc, text_to_image_acc = evaluator.evaluate()
+    print(f"Image-to-text accuracy: {round(image_to_text_acc * 100, 2)}%")
+    print(f"Text-to-image accuracy: {round(text_to_image_acc * 100, 2)}%")
+    save_metrics({
+        "image_to_text_accuracy": image_to_text_acc,
+        "text_to_image_accuracy": text_to_image_acc
+    }, results_dir, "eval_fashion_mnist_accuracy.json")

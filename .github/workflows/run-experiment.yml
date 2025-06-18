@@ -1,0 +1,37 @@
+name: Run Experiment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run-experiment:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Set workplace
+        run: cd remvae
+
+      - name: Generate experiment
+        run: |
+          python generator/generate.py experiments/example/args.json
+
+      - name: Run experiment
+        run: |
+          cd experiments/example
+          chmod +x execute.sh
+          ./execute.sh

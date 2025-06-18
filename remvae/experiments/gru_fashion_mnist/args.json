@@ -1,0 +1,24 @@
+{
+  "tokenizer_path": "../../models/gru_fashion_mnist/tokenizer.pkl",
+  "dataset_length": 10000,
+  "image_size": 56,
+  "latent_dim": 30,
+  "conv_dims": [256, 128, 64, 32],
+  "embedding_dim": 64,
+  "hidden_dim": 64,
+  "context_length": 10,
+  "batch_size": 32,
+  "epochs": 30,
+  "weights": {
+    "text_model_loss": 10,
+    "image_model_loss": 1000,
+    "text_kd_loss": 1,
+    "image_kd_loss": 1,
+    "align_loss": 100
+  },
+  "k": 0.003,
+  "x0": 1000,
+  "results_dir": "../../experiments/gru_fashion_mnist",
+  "checkpoint_dir": "../../models/gru_fashion_mnist",
+  "checkpoint_steps": 3000
+}

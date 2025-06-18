@@ -1,0 +1,1 @@
+    evaluate_mnist_accuracy(image_model, text_model, loader, dataset.tokenizer, device, args["results_dir"])
