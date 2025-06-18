@@ -23,15 +23,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Set workplace
-        run: cd remvae
-
       - name: Generate experiment
         run: |
-          python generator/generate.py experiments/example/args.json
+          python remvae/generator/generate.py remvae/experiments/gru_example/args.json
 
       - name: Run experiment
         run: |
-          cd experiments/example
+          cd remvae/experiments/gru_example
           chmod +x execute.sh
           ./execute.sh
