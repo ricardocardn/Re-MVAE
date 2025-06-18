@@ -25,7 +25,7 @@ jobs:
 
       - name: Generate experiment
         run: |
-          python remvae/generator/generate.py remvae/experiments/gru_example/args.json
+          PYTHONPATH=remvae python generator/generate.py experiments/gru_example/args.json
 
       - name: Run experiment
         run: |
