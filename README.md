@@ -122,7 +122,11 @@ Podemos ver cómo, para ambos dataset, los resultados obtenidos son bastante bue
 
 <p align="center"><img src="resources/latent.png" width="80%"></p>
 
-En cuanto a los experimentos realizados para CelebA, las tres arquitecturas LSTM, GRU y xLSTM han demostrado adaptarse con éxito al marco variacional para construir espacios latentes semánticos y alineados. No obstante, xLSTM ha mostrado una mejor adaptación, tal y como se puede comprobar en la Tabla 2.
+En cuanto a los experimentos realizados para CelebA, las tres arquitecturas LSTM, GRU y xLSTM han demostrado adaptarse con éxito al marco variacional para construir espacios latentes semánticos y alineados. No obstante, xLSTM ha mostrado una mejor adaptación, tal y como se puede comprobar en la Tabla 2. Las métricas mostradas en esta tabla son:
+
+- **Reconstruction FID**: Mide la distancia entre las imágenes reales y sus reconstrucciones a partir del espacio latente. Evalúa cuán fielmente el modelo es capaz de reconstruir imágenes originales tras codificarlas y decodificarlas.
+- **Generation FID**: Calcula la distancia entre imágenes reales y otras generadas directamente desde muestras aleatorias del espacio latente. Permite valorar la calidad y realismo de las imágenes generadas sin referencia directa a imágenes originales.
+- **Difference FID**: Es la diferencia entre el Reconstruction FID y el Generation FID para una misma arquitectura y resolución. Indica cuánto pierde el modelo al pasar de reconstruir imágenes conocidas a generar imágenes nuevas desde ruido, siendo valores bajos indicativos de un espacio latente bien estructurado.
 
 <div align="center">
   <table border="1" style="border-collapse: collapse; width: 90%; font-family: Arial, sans-serif;">
