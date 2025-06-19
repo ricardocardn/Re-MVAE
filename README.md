@@ -121,4 +121,88 @@ Podemos ver cómo, para ambos dataset, los resultados obtenidos son bastante bue
 2. **Complejidad del dataset**: El dataset FashionMNIST posee clases que son visualmente más similares entre sí que MNIST. Por ejemplo, las clases `coat` y `pullover` poseen muestras que son a simplemente muy parecidas. Esto da lugar a que las representaciones latentes asociadas a muestras de estas clases estén más próximas en el espacio latente, lo que a veces dará lugar a confusión en la generación cruzada. Esto puede comprobarse fácilmente en la siguiente Figura, que muestras los espacios latentes generados para cada dataset.
 
 <p align="center"><img src="resources/latent.png" width="80%"></p>
+
+En cuanto a los experimentos realizados para CelebA, las tres arquitecturas LSTM, GRU y xLSTM han demostrado adaptarse con éxito al marco variacional para construir espacios latentes semánticos y alineados. No obstante, xLSTM ha mostrado una mejor adaptación, tal y como se puede comprobar en la Tabla 2.
+
+<div align="center">
+  <table border="1" style="border-collapse: collapse; width: 90%; font-family: Arial, sans-serif;">
+     <caption style="font-weight: bold; font-size: 1.2em; margin-bottom: 15px; caption-side: top;">
+      <b>Tabla 2</b>: Comparación de arquitecturas 
+    </caption>
+    <thead>
+      <tr style="background-color: #f2f2f2;">
+        <th style="padding: 10px; text-align: left;">Architecture</th>
+        <th style="padding: 10px; text-align: center;">Resolution</th>
+        <th style="padding: 10px; text-align: center;">Reconstruction FID</th>
+        <th style="padding: 10px; text-align: center;">Generation FID</th>
+        <th style="padding: 10px; text-align: center;">Difference FID</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">GRU</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">56x56</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">102.02</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">111.31</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">9.29</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">GRU</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">32x32</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">107.07</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">111.04</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">3.97</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">GRU</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">128x128</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">128.83</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">138.64</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">9.81</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">LSTM</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">32x32</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">101.57</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">113.53</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">11.96</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">LSTM</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">56x56</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">100.24</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">110.76</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">10.52</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">LSTM</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">128x128</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">124.78</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">136.92</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">12.14</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">xLSTM</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">32x32</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">102.71</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">106.82</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">4.11</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">xLSTM</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">56x56</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">100.38</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">107.92</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">7.54</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px;">xLSTM</td>
+        <td style="padding: 10px; text-align: center;">128x128</td>
+        <td style="padding: 10px; text-align: center;">130.70</td>
+        <td style="padding: 10px; text-align: center;">136.55</td>
+        <td style="padding: 10px; text-align: center;">5.85</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 </div>
