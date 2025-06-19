@@ -33,52 +33,90 @@ Contiene la implementación base del framework:
   - vae.py: Define el modelo base del Variational Autoencoder, incluyendo funciones de codificación y decodificación.
   - trainer.py: Módulo responsable del ciclo de entrenamiento, manejo de pérdidas, optimización y métricas.
     
-- **architectures/**
+- **playground/**
+Siguiendo las interfaces definidas en `core/`, un usuario/investigador puede definir sus propias arquitecturas, datasets y trainers, para poder experimentar con esta aproximación, asegurando la integración de los nuevos componentes con los ya existentes y testeados. Para ello, este módulo está dividido, a su vez, en los siguientes:
+
+	- **architectures/**
 Implementa las arquitecturas específicas para cada modalidad y variantes del modelo:
   - Encoders y decoders para imágenes (CNNs, autoencoders convolucionales).
   - Modelos recurrentes para texto (LSTM, GRU, XLSTM).
   - Wrappers y builders para combinar los módulos en modelos completos.
-    
-- **experiments/**
-Carpeta que contiene scripts para ejecutar distintos experimentos: entrenamiento, evaluación y visualización para diferentes datasets y configuraciones de arquitectura.
-Se pueden añadir nuevos experimentos simplemente creando nuevas carpetas y scripts que sigan la estructura establecida (train.py, eval.py, visualize.py).
-Esto permite probar nuevas combinaciones de modelos y datasets sin alterar la estructura base.
-En este directorio se encuentran, además, una serie de notebooks con los principales experimentos realizados, para contrastar los resultados sin necesidad de ejecutar nuevamente los mismos.
 
-- **trainers/**
+	- **trainers/**
 Implementa diferentes estrategias y variantes de entrenamiento, incluyendo técnicas avanzadas como annealing o entrenamiento adaptativo para mejorar la convergencia y el alineamiento de representaciones.
 
-- **evaluators/**
+	- **evaluators/**
 Provee métricas y herramientas para evaluar modelos: calidad de reconstrucción, métricas específicas para imágenes (FID), métricas para texto (perplejidad), y evaluadores combinados para espacios multimodales.
 
-- **readers/**
+	- **readers/**
 Módulos dedicados a cargar y preprocesar datasets multimodales, permitiendo su integración en el pipeline de entrenamiento.
-Cada dataset está encapsulado en su propio lector, lo que facilita añadir nuevos conjuntos de datos. Para crear un nuevo dataset:
-	1.	Crear un nuevo módulo en readers/ con la lógica para cargar y transformar los datos en el formato esperado (por ejemplo, normalización, tokenización).
-	2.	Asegurarse de que el lector devuelva objetos compatibles con el sistema de entrenamiento (por ejemplo, tensores o batches multimodales).
-	3.	Registrar el nuevo dataset para su uso en experimentos.
+Cada dataset está encapsulado en su propio lector, lo que facilita añadir nuevos conjuntos de datos.
 
-- **utils/**
-Contiene funciones auxiliares para procesamiento de texto (tokenización, embeddings preentrenados como GloVe), manejo de arquitectura XLSTM y otros componentes generales.
+- **generator/**
+Implementa la lógica necesaria para poder crear experimentos a partir de una notación estructurada en formato json. Para eso, usa plantillas de python que son renderizadas según los argumentos de entrada. Los experimentos son creados con los componentes creados en `playground/`.
+
+- **experiments/**
+Contiene directorios con scripts que permiten la ejecucion de distintos experimentos, creados automáticamente por `generator/` a partir de los ficheros de definición de experimentos `args.json`. Los scripts que componen cada experimento son:
+
+	- **train.py**: Define y entrena un modelo dadas una configuración, un dataset y un trainer.
+ 	- **visualize.py**: Mediante generación cruzada, permite evaluar los modelos de una forma visual, generando imágenes que permitan corroborar el correcto entrenamiento de los modelos.
+  	- **eval.py**: Utiliza los evaluadores definidos en `args.json` para generar métricas que permitan comparar los modelos entre sí, además de evaluar numéricamente su rendimiento.
+  	- **report.py**: Genera un informe pdf con los resultados obtenidos por `visualize.py` y `report.py`.
+ 
+	Se pueden añadir nuevos experimentos simplemente creando un nuevo directorio y definiendo en él el experimento mediante un fichero `args.json`.
 
 - **tests/**
-Pruebas unitarias para verificar la correcta funcionalidad de los módulos, garantizando robustez y facilidad para futuras modificaciones.
+Adicionalmente, se añade un módulo de pruebas unitarias que permiten verificar la correcta funcionalidad de los componentes ya implementados en `playground/`, garantizando robustez y facilidad para futuras modificaciones.
 
-## 3. Añadir nuevos datasets
+## 3. Resultados
 
-Para integrar un nuevo dataset multimodal, deberá crearse un módulo lector en la carpeta readers/, el cual contenga los datos del dataset en un directorio `data` y una clase `Reader` para cargarlos en el experimento. Esto permite adaptar el framework a nuevas fuentes de datos, facilitando la exploración en diferentes dominios o tipos de información multimodal.
+Para este trabajo, se han realizado experimentos basados en los datasets MNIST, FashionMNIST y CelebA, todos ellos extendidos en `reader/` para devolver pares de texto e imagen sobre los que poder buscar un alineamiento. En cuanto a las arquitecturas recurrentes, se han implementado en este trabajo LSTM, GRU y xLSTM, permitiendo modelar la información textual de una forma más natural que aproximaciones previas. La siguientes tablas muestran, para los datasets MNIST y FashionMNIST, las métricas de precisión obtenidas. Estás métricas se han obtenido de la siguiente forma:
 
-## 4. Definición experimentos
+- **Text-to-image accuracy**: Utilizando un modelo de clasificacion de imágenes, se calculó el porcentaje de ocasiónes que la imagen generada según una etiqueta era clasificada con esa etiqueta justamente. Mide, por tanto, como de fiel es la generacion de imágenes a partir de texto.
+- **Image-to-text accuracy**: Utilizando un modelo de clasificacion de imágenes, se calculó el porcentaje de ocasiónes que el texto generado a partir de una imagen contenía la etiqueta correcta de la imagen. Así, esta métrica mide como de buena es la generación de texto es a partir de imágenes, indicando un mejor accuracy mejores descripciones.
+- **Text reconstruction perplexity**: Determina la calidad de las reconstrucciones de las descripciones textuales para el VAE de texto. Permite comprobar que el modelo de lenguaje es capaz de generar muestras con sentido a partir de representaciones latentes. Aunque es similar al MSE en este caso, es especialmente útil para compararla con **Image-to-text perplexity**.
+- **Image-to-text perplexity**: Determina la calidad de las descripciones generadas a partir de imágenes, independientemente de las etiquetas de las mismas. Mide la cohesión de los textos generados, y permite comparar modelos en cuando a generación realista de los textos.
 
-Para crear un nuevo experimento, han de seguirse los siguientes pasos:
-	1.	Crear una nueva carpeta dentro de experiments/ con un nombre representativo del experimento, por ejemplo, xlstm_custom_dataset.
-	2.	Añadir scripts básicos:
-   - train.py: Define el pipeline de entrenamiento, carga de datos y modelo.
-   - eval.py: Implementa la evaluación del modelo entrenado.
-   - visualize.py: Scripts para visualizar resultados, reconstrucciones o generación cruzada.
-	3.	Configurar el uso de datasets y arquitecturas que se deseen probar.
-	4.	Ejecutar los scripts para entrenar, evaluar y visualizar.
+<div align="center">
+  <table border="1" style="border-collapse: collapse; width: 80%;">
+    <caption style="font-weight: bold; font-size: 1.2em; margin-bottom: 15px; caption-side: top;">
+      <b>Tabla 1</b>: Comparación de Resultados
+    </caption>
+    <thead>
+      <tr>
+        <th style="padding: 10px; text-align: left; background-color: #f2f2f2;">Evaluador</th>
+        <th style="padding: 10px; text-align: center; background-color: #f2f2f2;">MNIST</th>
+        <th style="padding: 10px; text-align: center; background-color: #f2f2f2;">Fashion MNIST</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Text-to-image accuracy</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">93.18%</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">81.82%</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Image-to-text accuracy</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">79.26%</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">71.59%</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Text reconstruction PPL</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">20.54</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">19.07</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px;">Image-to-text PPL</td>
+        <td style="padding: 10px; text-align: center;">26.27</td>
+        <td style="padding: 10px; text-align: center;">22.84</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-Esta modularidad facilita experimentar con nuevas arquitecturas, datasets o configuraciones sin alterar el núcleo del framework.
+Podemos ver cómo, para ambos dataset, los resultados obtenidos son bastante buenos. En cuanto a la diferencia de accuracy, esto se debe a dos factores:
 
+1. **Accuracy de los modelos de clasificación**: Para el dataset MNIST, se utilizón como clasificador el modelo `farleyknight/mnist-digit-classification-2022-09-04`, basado en ViT, que posee más de un **99%** de accuracy. Por otro lado, para el dataset FashionMNIST se utilizó un modelo que fue entrenado por nosotros mismos, que llegó al **91%** aproximadamente.
+
+2. **Complejidad del dataset**: El dataset FashionMNIST posee clases que son visualmente más similares entre sí que MNIST. Por ejemplo, las clases `coat` y `pullover` poseen muestras que son a simplemente muy parecidas. Esto da lugar a que las representaciones latentes asociadas a muestras de estas clases estén más próximas en el espacio latente, lo que a veces dará lugar a confusión en la generación cruzada. Esto puede comprobarse fácilmente en la siguiente Figura, que muestras los espacios latentes generados para cada dataset.
 </div>
