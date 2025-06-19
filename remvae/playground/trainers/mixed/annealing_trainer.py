@@ -23,7 +23,8 @@ class MixedAnnealingTrainer(Trainer):
                  epochs: int,
                  method: str,
                  k: int,
-                 x0: int):
+                 x0: int,
+                 **kwargs):
         
         self.textVAE = textVAE
         self.imageVAE = imageVAE

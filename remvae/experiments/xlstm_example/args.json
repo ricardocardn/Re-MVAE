@@ -14,6 +14,7 @@
     "context_length": 10,
     "batch_size": 32,
     "epochs": 30,
+    "trainer": "MixedAdaptativennealingTrainer",
     "weights": {
         "text_model_loss": 10,
         "image_model_loss": 1000,

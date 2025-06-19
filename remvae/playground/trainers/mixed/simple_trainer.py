@@ -15,7 +15,8 @@ class MixedSimpleTrainer(Trainer):
                  text_criteria: nn.Module,
                  image_criteria: nn.Module,
                  optimizer: optim.Optimizer,
-                 epochs: int):
+                 epochs: int,
+                 **kwargs):
         
         self.textVAE = textVAE
         self.imageVAE = imageVAE
