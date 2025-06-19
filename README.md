@@ -205,4 +205,9 @@ En cuanto a los experimentos realizados para CelebA, las tres arquitecturas LSTM
     </tbody>
   </table>
 </div>
+
+En la portada de esta presentación se puede apreciar la calidad de las imágenes una vez procesadas con CodeFormer. Sin embargo, teniendo en cuenta las limitaciones de los VAE, además de las bajas resoluciones que pudieron probarse para este experimento, la calidad de las imágenes generadas es bastante buena. Esto es algo que puede apreciarse en la siguiente Figura.
+
+<p align="center"><img src="resources/xlstm.png" width="80%"></p>
+
 </div>
