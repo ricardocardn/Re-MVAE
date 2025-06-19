@@ -119,4 +119,6 @@ Podemos ver cómo, para ambos dataset, los resultados obtenidos son bastante bue
 1. **Accuracy de los modelos de clasificación**: Para el dataset MNIST, se utilizón como clasificador el modelo `farleyknight/mnist-digit-classification-2022-09-04`, basado en ViT, que posee más de un **99%** de accuracy. Por otro lado, para el dataset FashionMNIST se utilizó un modelo que fue entrenado por nosotros mismos, que llegó al **91%** aproximadamente.
 
 2. **Complejidad del dataset**: El dataset FashionMNIST posee clases que son visualmente más similares entre sí que MNIST. Por ejemplo, las clases `coat` y `pullover` poseen muestras que son a simplemente muy parecidas. Esto da lugar a que las representaciones latentes asociadas a muestras de estas clases estén más próximas en el espacio latente, lo que a veces dará lugar a confusión en la generación cruzada. Esto puede comprobarse fácilmente en la siguiente Figura, que muestras los espacios latentes generados para cada dataset.
+
+<p align="center"><img src="resources/latent.png" width="80%"></p>
 </div>
