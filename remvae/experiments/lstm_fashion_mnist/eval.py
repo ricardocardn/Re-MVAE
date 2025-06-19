@@ -5,16 +5,16 @@ import torch
 from torch.utils.data import DataLoader
 from torchvision import transforms
 
-from readers.fashion_mnist_mixed_dataset.reader import Reader
-from architectures.convolutional_image_autoencoder_depth_3 import Builder as ImageBuilder
-from architectures.lstm_seq2seq_bidirectional_enc import Builder as TextBuilder
-from evaluators import (
+from playground.readers.fashion_mnist_mixed_dataset.reader import Reader
+from playground.architectures.convolutional_image_autoencoder_depth_3 import Builder as ImageBuilder
+from playground.architectures.lstm_seq2seq_bidirectional_enc import Builder as TextBuilder
+from playground.evaluators import (
     MixedFIDEvaluator,
     ImageFIDEvaluator,
     MixedFashionMNISTEvaluator,
     MixedPerplexityEvaluator
 )
-from utils import TextTokenizer
+from playground.helpers.tokenizer import TextTokenizer
 
 
 def load_models_and_data(args_path):

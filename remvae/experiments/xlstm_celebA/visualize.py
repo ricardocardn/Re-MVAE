@@ -10,10 +10,10 @@ from torch.utils.data import DataLoader
 import torch
 from torchvision import transforms
 
-from readers.celeba_large_mixed_dataset.reader import Reader
-from architectures.convolutional_norm_image_autoencoder import Builder as ImageBuilder
-from architectures.xlstm_seq2seq_bidirectional_enc_autoreg_enc import Builder as TextBuilder
-from utils import TextTokenizer
+from playground.readers.celeba_large_mixed_dataset.reader import Reader
+from playground.architectures.convolutional_norm_image_autoencoder import Builder as ImageBuilder
+from playground.architectures.xlstm_seq2seq_bidirectional_enc_autoreg_enc import Builder as TextBuilder
+from playground.helpers.tokenizer import TextTokenizer
 
 from omegaconf import OmegaConf
 from dacite import from_dict, Config as DaciteConfig
