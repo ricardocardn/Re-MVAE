@@ -4,8 +4,10 @@ from torchvision.transforms import Resize
 from torchvision.transforms.functional import to_tensor
 import PIL
 
+from core import Evaluator
 
-class FIDEvaluator:
+
+class FIDEvaluator(Evaluator):
     def __init__(self, model, dataset, device='cuda', image_size=(128, 128)):
         self.model = model.to(device)
         self.dataset = dataset

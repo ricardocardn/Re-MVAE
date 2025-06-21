@@ -4,11 +4,12 @@ from torchvision.transforms.functional import to_tensor, to_pil_image
 import numpy as np
 
 from transformers import AutoModelForImageClassification, AutoImageProcessor, pipeline
-
 from typing import Tuple
 
+from core import Evaluator
 
-class MNISTEvaluator:
+
+class MNISTEvaluator(Evaluator):
     def __init__(self, image_model, text_model, dataset, tokenizer, device='cuda'):
         self.image_model = image_model.to(device)
         self.text_model = text_model.to(device)

@@ -6,8 +6,10 @@ import PIL
 
 from typing import Tuple
 
+from core import Evaluator
 
-class FIDEvaluator:
+
+class FIDEvaluator(Evaluator):
     def __init__(self, image_model, text_model, dataset, device='cuda', image_size=(128, 128)):
         self.image_model = image_model.to(device)
         self.text_model = text_model.to(device)

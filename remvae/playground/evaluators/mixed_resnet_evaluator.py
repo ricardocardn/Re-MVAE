@@ -6,8 +6,10 @@ import torch.nn.functional as F
 from typing import Tuple
 import PIL
 
+from core import Evaluator
 
-class ResnetEmbeddingEvaluator:
+
+class ResnetEmbeddingEvaluator(Evaluator):
     def __init__(self, image_model, text_model, dataset, device='cuda', metric='l2'):
         self.image_model = image_model.to(device)
         self.text_model = text_model.to(device)

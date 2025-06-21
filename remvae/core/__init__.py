@@ -14,3 +14,4 @@ from .vae import (
 
 from .trainer import Trainer
 from .wrapper import Wrapper
+from .evaluator import Evaluator

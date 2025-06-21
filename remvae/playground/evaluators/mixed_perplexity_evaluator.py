@@ -2,7 +2,10 @@ import torch
 from transformers import GPT2Tokenizer, GPT2LMHeadModel
 from typing import Tuple
 
-class PerplexityEvaluator:
+from core import Evaluator
+
+
+class PerplexityEvaluator(Evaluator):
     def __init__(self, image_model, text_model, dataset, dataset_tokenizer, device='cuda'):
         self.image_model = image_model.to(device)
         self.text_model = text_model.to(device)

@@ -4,11 +4,12 @@ import torch.nn.functional as F
 import numpy as np
 
 from .evaluation_models.simple_cnn import SimpleCNN
-
 from typing import Tuple
+
+from core import Evaluator
     
 
-class FashionMNISTEvaluator:
+class FashionMNISTEvaluator(Evaluator):
     def __init__(self, image_model, text_model, dataset, tokenizer, device='cuda', evaluator_path="../../models/evaluators/fashion_mnist_cnn.pth"):
         self.image_model = image_model.to(device)
         self.text_model = text_model.to(device)
