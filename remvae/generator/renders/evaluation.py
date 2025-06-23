@@ -4,11 +4,35 @@ import argparse
 from jinja2 import Environment, FileSystemLoader
 
 
-def read_build_template(path):
+def read_build_template(path: str):
     try:
         with open(path, 'r') as f:
             content = f.read()
             return content if content.endswith('\n') else content + '\n'
+    except:
+        return ""
+
+
+def indent_block(text: str, base_indent: int = 4, indent_increment: int = 4):
+    lines = text.splitlines()
+    if not lines:
+        return ''
+    indented_lines = []
+    for i, line in enumerate(lines):
+        if i == 0:
+            indented_lines.append(' ' * base_indent + line.strip())
+        else:
+            indented_lines.append(' ' * (base_indent + indent_increment) + line.strip())
+    return '\n'.join(indented_lines) + '\n'
+
+
+def read_and_indent_call(path: str, indent_spaces: int = 4):
+    try:
+        with open(path, 'r') as f:
+            content = f.read()
+        single_line = ' '.join(content.split())
+        indent = ' ' * indent_spaces
+        return indent + single_line + '\n\n'
     except:
         return ""
 
@@ -23,8 +47,23 @@ def generate_eval_script(args_path: str):
     evaluators = args.get('evaluators', [])
 
     libs = read_build_template(f'playground/architectures/{text_arch}/libs.template')
-    image_model_init = read_build_template(f'playground/architectures/{image_arch}/build.template')
-    text_model_init = read_build_template(f'playground/architectures/{text_arch}/build.template')
+    image_model_init_raw = read_build_template(f'playground/architectures/{image_arch}/build.template')
+    text_model_init_raw = read_build_template(f'playground/architectures/{text_arch}/build.template')
+
+    image_model_init = indent_block(image_model_init_raw)
+    text_model_init = indent_block(text_model_init_raw)
+
+    evaluator_imports = ', '.join(evaluators)
+
+    evaluator_calls = ""
+    for evaluator in evaluators:
+        path = f'playground/evaluators/{evaluator}/{evaluator}.call.template'
+        evaluator_calls += read_and_indent_call(path, indent_spaces=4)
+
+    evaluator_functions = ""
+    for evaluator in evaluators:
+        path = f'playground/evaluators/{evaluator}/{evaluator}.template'
+        evaluator_functions += read_build_template(path) + '\n'
 
     env = Environment(
         loader=FileSystemLoader('.'),
@@ -41,7 +80,9 @@ def generate_eval_script(args_path: str):
         libs=libs,
         image_model_init=image_model_init,
         text_model_init=text_model_init,
-        evaluators=evaluators
+        evaluator_imports=evaluator_imports,
+        evaluator_calls=evaluator_calls,
+        evaluator_functions=evaluator_functions
     )
 
     output_dir = f'experiments/{args["name"]}'
@@ -63,7 +104,6 @@ def main():
     parser = argparse.ArgumentParser(description="Generate evaluation script from template and args.json")
     parser.add_argument("args_path", type=str, help="Path to args.json")
     args = parser.parse_args()
-
     generate_eval_script(args.args_path)
 
 

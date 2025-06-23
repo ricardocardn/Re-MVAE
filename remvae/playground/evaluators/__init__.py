@@ -1,10 +1,10 @@
-from .mixed_fid_evaluator import FIDEvaluator as MixedFIDEvaluator
-from .image_fid_evaluator import FIDEvaluator as ImageFIDEvaluator
+from .mixedFIDEvaluator.MixedFIDEvaluator import FIDEvaluator as MixedFIDEvaluator
+from .imageFIDEvaluator.ImageFIDEvaluator import FIDEvaluator as ImageFIDEvaluator
 
-from .mixed_resnet_evaluator import ResnetEmbeddingEvaluator as MixedResnetEmbeddingEvaluator
-from .image_resnet_evaluator import ResnetEmbeddingEvaluator as ImageResnetEmbeddingEvaluator
+from .mixedResnetEvaluator.MixedResnetEvaluator import ResnetEmbeddingEvaluator as MixedResnetEmbeddingEvaluator
+from .imageResnetEvaluator.ImageResnetEvaluator import ResnetEmbeddingEvaluator as ImageResnetEmbeddingEvaluator
 
-from .mixed_mnist_evaluator import MNISTEvaluator as MixedMNISTEvaluator
-from .mixed_fashion_mnist_evaluator import FashionMNISTEvaluator as MixedFashionMNISTEvaluator
+from .mixedMNISTEvaluator.MixedMNISTEvaluator import MNISTEvaluator as MixedMNISTEvaluator
+from .mixedFashionMNISTEvaluator.MixedFashionMnistEvaluator import FashionMNISTEvaluator as MixedFashionMNISTEvaluator
 
-from .mixed_perplexity_evaluator import PerplexityEvaluator as MixedPerplexityEvaluator
+from .mixedPerplexityEvaluator.MixedPerplexityEvaluator import PerplexityEvaluator as MixedPerplexityEvaluator

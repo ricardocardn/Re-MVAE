@@ -1,1 +1,0 @@
-    evaluate_mixed_fid(image_model, text_model, loader, device, args["results_dir"])

@@ -1,0 +1,1 @@
+evaluate_image_fid(image_model, loader, device, args["results_dir"])

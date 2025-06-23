@@ -7,15 +7,10 @@ from torchvision import transforms
 from playground.readers.{{ reader }}.reader import Reader
 from playground.architectures.{{ image_architecture }} import Builder as ImageBuilder
 from playground.architectures.{{ text_architecture }} import Builder as TextBuilder, Wrapper
-from playground.evaluators import (
-    {% for evaluator in evaluators %}
-    {{ evaluator }}{% if not loop.last %},{% endif %}
-    {% endfor %}
-)
+from playground.evaluators import ({{ evaluator_imports }})
 from playground.helpers.tokenizer import TextTokenizer
 
 {{ libs }}
-
 
 def load_models_and_data(args_path):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -32,8 +27,8 @@ def load_models_and_data(args_path):
     dataset.tokenizer = tokenizer
     loader = DataLoader(dataset, batch_size=1, shuffle=False)
 
-    {{ image_model_init | indent(4) }}
-    {{ text_model_init | indent(4) }}
+{{ image_model_init }}
+{{ text_model_init }}
 
     wrapper = Wrapper(text_model)
 
@@ -71,23 +66,13 @@ def save_metrics(metrics, results_dir, filename):
         json.dump(metrics, f, indent=4)
     print(f"Saved metrics to {path}")
 
-
-{% for evaluator in evaluators %}
-{% include 'generator/templates/evaluators/' + evaluator + '.template' %}
-
-
-{% endfor %}
-
+{{ evaluator_functions }}
 
 def main():
     args_path = "args.json"
     args, image_model, text_model, dataset, loader, device = load_models_and_data(args_path)
 
-    {% for evaluator in evaluators %}
-    {% include 'generator/templates/evaluators/' + evaluator + '.call.template' %}
-
-    {% endfor %}
-
+{{ evaluator_calls }}
 
 if __name__ == "__main__":
     main()

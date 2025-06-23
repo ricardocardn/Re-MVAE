@@ -4,7 +4,7 @@ import argparse
 from jinja2 import Environment, FileSystemLoader
 
 
-def read_build_template(path):
+def read_build_template(path: str):
     try:
         with open(path, 'r') as f:
             return f.read()
