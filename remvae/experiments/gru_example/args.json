@@ -7,7 +7,7 @@
     "dataset_length": 10000,
     "image_size": 56,
     "input_channels": 1,
-    "latent_dim": 30,
+    "latent_dim": 1200,
     "embedding_dim": 64,
     "hidden_dim": 64,
     "context_length": 10,
@@ -28,7 +28,6 @@
     "checkpoint_dir": "../../models/gru_example",
     "checkpoint_steps": 3000,
     "evaluators": [
-        "MixedMNISTEvaluator",
-        "MixedPerplexityEvaluator"
+        "MixedMNISTEvaluator"
     ]
 }

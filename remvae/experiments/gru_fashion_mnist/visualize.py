@@ -18,6 +18,8 @@ from playground.architectures.gru_seq2seq_bidirectional_enc import Builder as Te
 from playground.helpers.tokenizer import TextTokenizer
 
 
+
+
 def collate_fn(batch, pad_idx, max_len):
     images, sequences = zip(*batch)
     sequences = pad_sequence(
@@ -167,78 +169,6 @@ def interpolate_images(image_model, loader, device, output_dir, image_size, rows
     print(f"Interpolation image saved at: {interp_path}")
 
 
-def plot_tsne_latent_space(image_model, text_model, loader, dataset, device, output_dir):
-    text_labels = [
-        "t-shirt", "trouser", "pullover", "dress", "coat",
-        "sandal", "shirt", "sneaker", "bag", "ankle boot"
-    ]
-    latents = []
-    labels = []
-
-    with torch.no_grad():
-        for img, seq in loader:
-            _, mu, _ = image_model(img.to(device))
-
-            for i, s in enumerate(seq):
-                text_decoded = transform_to_text(s.unsqueeze(0), dataset.tokenizer).lower()
-                found_label = next((label for label in text_labels if label in text_decoded), None)
-
-                if found_label:
-                    latents.append(mu[i].cpu())
-                    labels.append(found_label)
-
-    if not latents:
-        print("No labeled latents found for t-SNE.")
-        return
-
-    latents = torch.stack(latents, dim=0)
-
-    text_embeddings = []
-    with torch.no_grad():
-        for label in text_labels:
-            tokens = torch.tensor(dataset.tokenizer.encode(f"{label} <eos>")).unsqueeze(0).to(device)
-            _, mu, _ = text_model(tokens)
-            mu = mu.squeeze(0)
-            text_embeddings.append(mu.cpu())
-
-    text_embeddings = torch.stack(text_embeddings, dim=0)
-    all_latents = torch.cat([latents, text_embeddings], dim=0)
-
-    tsne = TSNE(n_components=2, perplexity=30, random_state=42)
-    all_latents_2d = tsne.fit_transform(all_latents.numpy())
-
-    img_latents_2d = all_latents_2d[:len(latents)]
-    text_latents_2d = all_latents_2d[len(latents):]
-
-    plt.figure(figsize=(15, 8))
-    palette = sns.color_palette("tab10", len(text_labels))
-    label_to_color = {label: palette[i] for i, label in enumerate(text_labels)}
-
-    for label in text_labels:
-        idxs = [i for i, l in enumerate(labels) if l == label]
-        if idxs:
-            coords = img_latents_2d[idxs]
-            plt.scatter(coords[:, 0], coords[:, 1], label=label, alpha=0.8, s=20, color=label_to_color[label])
-
-    for i, (x, y) in enumerate(text_latents_2d):
-        plt.scatter(x, y, marker='X', s=200, color=palette[i], edgecolor='black')
-        plt.text(x + 1.5, y, text_labels[i],
-                 fontsize=14, fontweight='bold', color='black',
-                 bbox=dict(facecolor='white', alpha=0.8, edgecolor='none', boxstyle='round,pad=0.3'))
-
-    plt.title("Visualización del espacio latente (t-SNE):\nEmbeddings de texto e imágenes", fontsize=16)
-    plt.xlabel("t-SNE 1")
-    plt.ylabel("t-SNE 2")
-    plt.legend(title="Etiqueta real", fontsize=14, loc='center left', bbox_to_anchor=(1.02, 0.5))
-    plt.tight_layout(rect=[0, 0, 0.85, 1])
-    plt.grid(True)
-
-    path = os.path.join(output_dir, 'tsne_latent_space.png')
-    plt.savefig(path)
-    plt.close()
-    print(f"t-SNE plot saved at: {path}")
-
-
 def find_latest_checkpoint_dir(base_path):
     subdirs = [
         os.path.join(base_path, d) for d in os.listdir(base_path)
@@ -278,14 +208,10 @@ def main():
     )
 
     image_model = ImageBuilder().build(
-        args["image_size"],
-        1,
-        args["latent_dim"]
+        args["image_size"], args["input_channels"], args["latent_dim"]
     )
-
-    vocab_size = len(dataset.tokenizer.vocab)
     text_model = TextBuilder().build(
-        vocab_size=vocab_size,
+        vocab_size=len(dataset.tokenizer.vocab),
         embedding_dim=args["embedding_dim"],
         hidden_dim=args["hidden_dim"],
         latent_dim=args["latent_dim"],
@@ -311,7 +237,6 @@ def main():
     reconstruct_text_from_image(image_model, text_model, loader, dataset, device, output_dir, args["image_size"])
     generate_image_from_text(image_model, text_model, loader, dataset, device, output_dir, args["image_size"])
     interpolate_images(image_model, loader, device, output_dir, args["image_size"])
-    plot_tsne_latent_space(image_model, text_model, loader, dataset, device, output_dir)
 
 
 if __name__ == "__main__":

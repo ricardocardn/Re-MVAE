@@ -2,4 +2,4 @@
 PYTHONPATH=../.. python train.py args.json && \
 PYTHONPATH=../.. python visualize.py args.json && \
 PYTHONPATH=../.. python eval.py args.json && \
-PYTHONPATH=../.. python report.py
+PYTHONPATH=../.. python report.py args.json

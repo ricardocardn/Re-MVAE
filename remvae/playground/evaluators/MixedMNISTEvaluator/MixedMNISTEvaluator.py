@@ -25,13 +25,13 @@ class MNISTEvaluator(Evaluator):
         classifier = pipeline("image-classification", model=model, image_processor=processor)
         return classifier
     
-    def evaluate(self) -> Tuple[int, int]:
+    def evaluate(self) -> Tuple[Tuple[float, float, float], Tuple[float, float, float]]:
         return (
             self.__evaluate_image_to_text(),
             self.__evaluate_text_to_image()
         )
 
-    def __evaluate_text_to_image(self) -> int:
+    def __evaluate_text_to_image(self) -> Tuple[float, float, float]:
         self.image_model.eval()
         gen_imgs = []
 
@@ -44,13 +44,11 @@ class MNISTEvaluator(Evaluator):
 
         pil_images, targets = self.__prepare_images(gen_imgs)
         output = self.evaluator(pil_images)
-        results = self.__get_predictions(output)
+        predictions = self.__get_predictions(output, topk=3)
 
-        correct_samples = np.sum(np.array(targets) == np.array(results))
-        total_samples = len(results)
-        return correct_samples / total_samples
+        return self.__evaluate_accuracy_topk(predictions, targets)
     
-    def __evaluate_image_to_text(self) -> int:
+    def __evaluate_image_to_text(self) -> Tuple[float, float, float]:
         self.image_model.eval()
         gen_imgs = []
 
@@ -64,11 +62,9 @@ class MNISTEvaluator(Evaluator):
 
         pil_images, targets = self.__prepare_images(gen_imgs)
         output = self.evaluator(pil_images)
-        results = self.__get_predictions(output)
+        predictions = self.__get_predictions(output, topk=3)
 
-        correct_samples = np.sum(np.array(targets) == np.array(results))
-        total_samples = len(results)
-        return correct_samples / total_samples
+        return self.__evaluate_accuracy_topk(predictions, targets)
 
     def __prepare_images(self, images):
         pil_images = []
@@ -98,12 +94,26 @@ class MNISTEvaluator(Evaluator):
             
         return -1
     
-    def __get_predictions(self, outputs):
+    def __get_predictions(self, outputs, topk=3):
         number_to_text = {
             "0": "zero", "1": "one", "2": "two", "3": "three", "4": "four",
             "5": "five", "6": "six", "7": "seven", "8": "eight", "9": "nine"
         }
-        results = []
+
+        predictions = []
         for output in outputs:
-            results.append(number_to_text[output[0]["label"]])
-        return results
+            top_preds = [number_to_text[o["label"]] for o in output[:topk]]
+            predictions.append(top_preds)
+        return predictions
+
+    def __evaluate_accuracy_topk(self, predictions, targets):
+        top1, top2, top3 = 0, 0, 0
+        for pred_list, target in zip(predictions, targets):
+            if target == pred_list[0]:
+                top1 += 1
+            if target in pred_list[:2]:
+                top2 += 1
+            if target in pred_list[:3]:
+                top3 += 1
+        total = len(targets)
+        return top1 / total, top2 / total, top3 / total

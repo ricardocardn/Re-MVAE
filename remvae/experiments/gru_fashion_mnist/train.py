@@ -18,6 +18,8 @@ from playground.architectures.gru_seq2seq_bidirectional_enc import Builder as Te
 from playground.trainers import MixedAdaptativennealingTrainer
 
 
+
+
 with open(sys.argv[1], 'r') as f:
     args = json.load(f)
 
@@ -54,7 +56,7 @@ loader = DataLoader(
 
 
 image_model = ImageBuilder().build(
-    args["image_size"], 1, args["latent_dim"]
+    args["image_size"], args["input_channels"], args["latent_dim"]
 )
 text_model = TextBuilder().build(
     vocab_size=len(dataset.tokenizer.vocab),
@@ -64,28 +66,30 @@ text_model = TextBuilder().build(
     context_length=args["context_length"],
     num_layers=1
 )
+
 wrapper = Wrapper(text_model)
 
 params = list(image_model.parameters()) + list(text_model.parameters())
 optimizer = torch.optim.Adam(params, lr=1e-3, betas=(0.5, 0.999), weight_decay=1e-5)
-
+text_criteria = nn.CrossEntropyLoss(ignore_index=pad_idx, reduction='mean')
+image_criteria = nn.BCELoss(reduction='mean')
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 image_model.to(device)
 text_model.to(device)
 
 trainer = MixedAdaptativennealingTrainer(
-    wrapper,
-    image_model,
-    nn.CrossEntropyLoss(ignore_index=pad_idx, reduction='mean'),
-    nn.BCELoss(reduction='mean'),
-    optimizer,
+    textVAE=wrapper,
+    imageVAE=image_model,
+    text_criteria=text_criteria,
+    image_criteria=image_criteria,
+    optimizer=optimizer,
     epochs=args["epochs"],
-    latent_dim=args["latent_dim"],
-    weights=args["weights"],
-    method="modified",
-    k=args["k"],
-    x0=args["x0"]
+    latent_dim=args.get("latent_dim"),
+    weights=args.get("weights"),
+    method=args.get("training_method"),
+    k=args.get("k"),
+    x0=args.get("x0")
 )
 
 start_time = time.time()

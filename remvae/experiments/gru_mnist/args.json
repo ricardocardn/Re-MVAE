@@ -1,9 +1,9 @@
 {
-    "name": "gru_minst",
+    "name": "gru_example",
     "reader": "mnist_mixed_dataset",
     "text_architecture": "gru_seq2seq_bidirectional_enc",
     "image_architecture": "convolutional_image_autoencoder_depth_3",
-    "tokenizer_path": "../../models/gru_minst/tokenizer.pkl",
+    "tokenizer_path": "../../models/example/tokenizer.pkl",
     "dataset_length": 10000,
     "image_size": 56,
     "input_channels": 1,
@@ -24,8 +24,8 @@
     },
     "k": 0.003,
     "x0": 1000,
-    "results_dir": "../../experiments/gru_minst",
-    "checkpoint_dir": "../../models/gru_minst",
+    "results_dir": "../../experiments/gru_example",
+    "checkpoint_dir": "../../models/gru_example",
     "checkpoint_steps": 3000,
     "evaluators": [
         "MixedMNISTEvaluator",
