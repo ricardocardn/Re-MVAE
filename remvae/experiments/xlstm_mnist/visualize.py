@@ -11,7 +11,7 @@ from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
 from torchvision import transforms
 
-from playground.readers.mnist_mixed_dataset.reader import Reader
+from playground.readers.MNISTMixedDataset.reader import Reader
 from playground.architectures.FixedConvolutionalImageAutoencoder import Builder as ImageBuilder
 from playground.architectures.xLSTMSeq2seqBidirectionalAutoregressive import Builder as TextBuilder
 from playground.helpers.tokenizer import TextTokenizer

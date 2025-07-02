@@ -4,7 +4,7 @@ import torch
 from torch.utils.data import DataLoader
 from torchvision import transforms
 
-from playground.readers.fashion_mnist_mixed_dataset.reader import Reader
+from playground.readers.MNISTMixedDataset.reader import Reader
 from playground.architectures.FixedConvolutionalImageAutoencoder import Builder as ImageBuilder
 from playground.architectures.LSTMSeq2seqBidirectional import Builder as TextBuilder
 from playground.evaluators import MixedFIDEvaluator, ImageFIDEvaluator

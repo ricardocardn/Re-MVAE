@@ -7,7 +7,7 @@ from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
 from torchvision import transforms
 
-from playground.readers.celeba_large_mixed_dataset.reader import Reader
+from playground.readers.CelebAMixedLargeDataset.reader import Reader
 from playground.architectures.ConvolutionalNormImageAutoencoder import Builder as ImageBuilder
 from playground.architectures.xLSTMSeq2seqBidirectionalAutoregressive import Builder as TextBuilder, Wrapper
 from playground.trainers import MixedAdaptativennealingTrainer

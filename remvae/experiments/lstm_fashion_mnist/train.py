@@ -6,7 +6,7 @@ from functools import partial
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
 from torchvision import transforms
-from playground.readers.fashion_mnist_mixed_dataset.reader import Reader
+from playground.readers.FashionMNISTMixedDataset.reader import Reader
 from playground.architectures.FixedConvolutionalImageAutoencoder import Builder as ImageBuilder
 from playground.architectures.LSTMSeq2seqBidirectional import Builder as TextBuilder, Wrapper
 from playground.trainers import MixedAdaptativennealingTrainer

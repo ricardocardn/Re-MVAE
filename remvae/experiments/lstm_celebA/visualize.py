@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader
 import torch
 from torchvision import transforms
 
-from playground.readers.celeba_large_mixed_dataset.reader import Reader
+from playground.readers.CelebAMixedLargeDataset.reader import Reader
 from playground.architectures.ConvolutionalNormImageAutoencoder import Builder as ImageBuilder
 from playground.architectures.LSTMSeq2seqBidirectional import Builder as TextBuilder, Wrapper
 
