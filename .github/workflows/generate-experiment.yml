@@ -27,9 +27,3 @@ jobs:
         run: |
           cd remvae
           PYTHONPATH=. python generator/generate.py experiments/gru_example/args.json
-
-      - name: Run experiment
-        run: |
-          cd remvae/experiments/gru_example
-          chmod +x execute.sh
-          ./execute.sh
