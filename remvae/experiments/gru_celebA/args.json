@@ -1,8 +1,8 @@
 {
     "name": "gru_celebA",
-    "reader": "celebA_large_mixed_dataset",
-    "text_architecture": "gru_seq2seq_bidirectional_enc",
-    "image_architecture": "convolutional_norm_image_autoencoder",
+    "reader": "CelebAMixedLargeDataset",
+    "text_architecture": "GRUSeq2seqBidirectional",
+    "image_architecture": "ConvolutionalNormImageAutoencoder",
     "tokenizer_path": "../../models/gru_celebA/tokenizer.pkl",
     "dataset_length": 128,
     "image_size": 128,

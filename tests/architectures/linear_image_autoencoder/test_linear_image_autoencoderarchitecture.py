@@ -5,7 +5,7 @@ from core.architectures import ImageVAE
 import torch
 import torch.nn as nn
 
-from playground.architectures.linear_image_autoencoder import Builder
+from playground.architectures.LinearImageAutoencoder import Builder
 
 
 def test_decoder_forward():

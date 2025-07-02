@@ -1,8 +1,8 @@
 {
     "name": "xlstm_example",
-    "reader": "mnist_mixed_dataset",
-    "text_architecture": "xlstm_seq2seq_bidirectional_enc_autoreg_enc",
-    "image_architecture": "convolutional_image_autoencoder_depth_3",
+    "reader": "MNISTMixedDataset",
+    "text_architecture": "xLSTMSeq2seqBidirectionalAutoregressive",
+    "image_architecture": "ConvolutionalNormImageAutoencoder",
     "config_path": "../../experiments/example/configs",
     "tokenizer_path": "../../models/example/tokenizer.pkl",
     "dataset_length": 10000,

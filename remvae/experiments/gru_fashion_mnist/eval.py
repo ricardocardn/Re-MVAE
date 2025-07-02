@@ -5,8 +5,8 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 
 from playground.readers.fashion_mnist_mixed_dataset.reader import Reader
-from playground.architectures.convolutional_image_autoencoder_depth_3 import Builder as ImageBuilder
-from playground.architectures.gru_seq2seq_bidirectional_enc import Builder as TextBuilder, Wrapper
+from playground.architectures.FixedConvolutionalImageAutoencoder import Builder as ImageBuilder
+from playground.architectures.GRUSeq2seqBidirectional import Builder as TextBuilder, Wrapper
 from playground.evaluators import (MixedFashionMNISTEvaluator, MixedPerplexityEvaluator)
 from playground.helpers.tokenizer import TextTokenizer
 

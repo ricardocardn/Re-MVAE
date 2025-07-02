@@ -11,8 +11,8 @@ import torch
 from torchvision import transforms
 
 from playground.readers.celeba_large_mixed_dataset.reader import Reader
-from playground.architectures.convolutional_norm_image_autoencoder import Builder as ImageBuilder
-from playground.architectures.xlstm_seq2seq_bidirectional_enc_autoreg_enc import Builder as TextBuilder
+from playground.architectures.ConvolutionalNormImageAutoencoder import Builder as ImageBuilder
+from playground.architectures.xLSTMSeq2seqBidirectionalAutoregressive import Builder as TextBuilder
 from playground.helpers.tokenizer import TextTokenizer
 
 from omegaconf import OmegaConf

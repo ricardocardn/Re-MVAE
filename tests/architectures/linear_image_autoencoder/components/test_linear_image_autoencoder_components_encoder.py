@@ -3,7 +3,7 @@ import torch
 
 import torch.nn as nn
 
-from playground.architectures.linear_image_autoencoder.encoder import LinearEncoder
+from playground.architectures.LinearImageAutoencoder.encoder import LinearEncoder
 
 
 def test_decoder_forward_gray_128():

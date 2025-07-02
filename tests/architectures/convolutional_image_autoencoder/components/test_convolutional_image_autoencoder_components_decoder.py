@@ -3,7 +3,7 @@ import torch
 
 import torch.nn as nn
 
-from playground.architectures.convolutional_image_autoencoder.decoder import ConvolutionalDecoder
+from playground.architectures.ConvolutionalImageAutoencoder.decoder import ConvolutionalDecoder
 
 
 def test_decoder_forward_gray_128():

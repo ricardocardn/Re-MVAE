@@ -1,25 +1,35 @@
 {
-  "tokenizer_path": "../../models/gru_celebA/tokenizer.pkl",
-  "dataset_length": 128,
-  "image_size": 128,
-  "latent_dim": 512,
-  "conv_dims": [256, 128, 64, 32],
-  "embedding_dim": 64,
-  "hidden_dim": 64,
-  "context_length": 45,
-  "batch_size": 128,
-  "epochs": 400,
-  "weights": {
-    "text_model_loss": 10,
-    "image_model_loss": 1000,
-    "text_kd_loss": 1,
-    "image_kd_loss": 30,
-    "align_loss": 10
-  },
-  "teacher_forcing_ratio": 0.5,
-  "k": 0.0007,
-  "x0": 30000,
-  "results_dir": "../../experiments/gru_celebA",
-  "checkpoint_dir": "../../models/gru_celebA",
-  "checkpoint_steps": 1
+    "name": "xlstm_celebA",
+    "reader": "CelebAMixedLargeDataset",
+    "text_architecture": "xLSTMSeq2seqBidirectionalAutoregressive",
+    "image_architecture": "ConvolutionalNormImageAutoencoder",
+    "config_path": "../../experiments/example/configs",
+    "tokenizer_path": "../../models/xlstm_celebA/tokenizer.pkl",
+    "dataset_length": 128,
+    "image_size": 128,
+    "input_channels": 3,
+    "latent_dim": 512,
+    "conv_dims": [256, 128, 64, 32],
+    "embedding_dim": 64,
+    "hidden_dim": 64,
+    "context_length": 45,
+    "batch_size": 128,
+    "epochs": 400,
+    "trainer": "MixedAdaptativennealingTrainer",
+    "weights": {
+        "text_model_loss": 10,
+        "image_model_loss": 1000,
+        "text_kd_loss": 1,
+        "image_kd_loss": 1,
+        "align_loss": 100
+    },
+    "k": 0.003,
+    "x0": 1000,
+    "results_dir": "../../experiments/xlstm_celebA",
+    "checkpoint_dir": "../../models/xlstm_celebA",
+    "checkpoint_steps": 3000,
+    "evaluators": [
+        "MixedFIDEvaluator",
+        "MixedPerplexityEvaluator"
+    ]
 }

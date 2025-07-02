@@ -2,11 +2,10 @@ __pycache__/
 
 models/
 
-playground/readers/mnist_image_dataset/data/*
-playground/readers/mnist_mixed_dataset/data/*
-playground/readers/fashion_mnist_mixed_dataset/data/*
-playground/readers/fashion_mnist_image_dataset/data/*
-playground/readers/celeba_no_background_large_mixed_dataset/data/*
+playground/readers/MNISTImageDataset/data/*
+playground/readers/MNISTMixedDataset/data/*
+playground/readers/FashionMNISTImageDataset/data/*
+playground/readers/FashionMNISTMixedDataset/data/*
 
 results_gen/
 results_gen_text/
