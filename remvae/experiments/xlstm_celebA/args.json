@@ -15,7 +15,7 @@
     "context_length": 45,
     "batch_size": 128,
     "epochs": 400,
-    "trainer": "MixedAdaptativennealingTrainer",
+    "trainer": "MixedAdaptativeAnnealingTrainer",
     "weights": {
         "text_model_loss": 10,
         "image_model_loss": 1000,

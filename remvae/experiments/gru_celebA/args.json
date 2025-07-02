@@ -13,7 +13,7 @@
     "context_length": 45,
     "batch_size": 128,
     "epochs": 400,
-    "trainer": "MixedAdaptativennealingTrainer",
+    "trainer": "MixedAdaptativeAnnealingTrainer",
     "training_method": "modified",
     "weights": {
       "text_model_loss": 10,

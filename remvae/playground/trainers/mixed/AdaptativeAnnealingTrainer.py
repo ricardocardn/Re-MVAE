@@ -18,7 +18,7 @@ import os
 import time
 
 
-class MixedAdaptativennealingTrainer(Trainer):
+class MixedAdaptativeAnnealingTrainer(Trainer):
     def __init__(self, textVAE: Union[TextVAE, Wrapper],
                  imageVAE: ImageVAE,
                  text_criteria: nn.Module,

@@ -8,4 +8,4 @@ from .image.AdaptativeAnnealingTrainer import ImageAdaptativennealingTrainer
 
 from .mixed.SimpleTrainer import MixedSimpleTrainer
 from .mixed.AnnealingTrainer import MixedAnnealingTrainer
-from .mixed.AdaptativeAnnealingTrainer import MixedAdaptativennealingTrainer
+from .mixed.AdaptativeAnnealingTrainer import MixedAdaptativeAnnealingTrainer
