@@ -11,7 +11,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 
-from typing import Union, Tuple
+from typing import Union, Tuple, Callable
 
 
 class MixedAnnealingTrainer(Trainer):
@@ -21,7 +21,7 @@ class MixedAnnealingTrainer(Trainer):
                  image_criteria: nn.Module,
                  optimizer: optim.Optimizer,
                  epochs: int,
-                 method: str,
+                 method: Callable,
                  k: int,
                  x0: int,
                  **kwargs):
@@ -124,11 +124,6 @@ class MixedAnnealingTrainer(Trainer):
         image_kd_loss = - 0.5 * torch.sum(1 + torch.log(sigma_image**2) - mu_image**2 - sigma_image**2)
 
         align_loss = torch.sum((mu_text - mu_image)**2) + torch.sum((sigma_text - sigma_image)**2)
-
-        if self.method == 'linear':
-            weight = linear_kl_annealing_func(step, self.x0)
-
-        elif self.method == 'logistic':
-            weight = logistic_kl_annealing_func(step, self.k, self.x0)
+        weight = self.method(step=step, k=self.k, x0=self.x0)
 
         return text_model_loss, image_model_loss, text_kd_loss, image_kd_loss, align_loss, weight

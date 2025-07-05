@@ -16,6 +16,7 @@ from playground.readers.{{ reader }}.reader import Reader
 from playground.architectures.{{ image_architecture }} import Builder as ImageBuilder
 from playground.architectures.{{ text_architecture }} import Builder as TextBuilder, Wrapper
 from playground.trainers import {{ trainer }}
+from playground.helpers.annealing import {{ training_method }}
 
 {{ libs }}
 
@@ -78,15 +79,15 @@ trainer = {{ trainer }}(
     epochs=args["epochs"],
     latent_dim=args.get("latent_dim"),
     weights=args.get("weights"),
-    method=args.get("training_method"),
+    method={{ training_method }},
     k=args.get("k"),
     x0=args.get("x0")
 )
 
 start_time = time.time()
 _, _, metrics = trainer.train(
-    loader,
-    device,
+    dataset=loader,
+    device=device,
     return_metrics=True,
     results_dir=args["results_dir"],
     checkpoint_dir=args["checkpoint_dir"],

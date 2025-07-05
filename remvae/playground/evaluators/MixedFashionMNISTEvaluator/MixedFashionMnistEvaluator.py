@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 
-from .evaluation_models.simple_cnn import SimpleCNN
+from .evaluation_model.simple_cnn import SimpleCNN
 from typing import Tuple, List
 
 from core import Evaluator

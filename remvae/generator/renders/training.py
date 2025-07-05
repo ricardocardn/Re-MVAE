@@ -20,6 +20,7 @@ def generate_training_script(args_path: str):
     image_arch = args['image_architecture']
     text_arch = args['text_architecture']
     trainer = args['trainer']
+    training_method = args['training_method']
 
     libs = read_build_template(f'playground/architectures/{text_arch}/libs.template')
     image_model_init = read_build_template(f'playground/architectures/{image_arch}/build.template')
@@ -30,6 +31,7 @@ def generate_training_script(args_path: str):
 
     rendered_code = template.render(
         reader=reader,
+        training_method=training_method,
         image_architecture=image_arch,
         text_architecture=text_arch,
         trainer=trainer,

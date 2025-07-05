@@ -1,19 +1,13 @@
 from core import Trainer, Wrapper
 from core.architectures import TextVAE, ImageVAE
 
-from playground.helpers.annealing import (
-    linear_kl_annealing_func,
-    logistic_kl_annealing_func,
-    modified_logistic_kl_annealing_func
-)
-
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 from torchvision.utils import save_image
 
-from typing import Union, Tuple
+from typing import Union, Tuple, Callable
 import os
 import time
 
@@ -27,7 +21,7 @@ class MixedAdaptativeAnnealingTrainer(Trainer):
                  epochs: int,
                  latent_dim: int,
                  weights: dict,
-                 method: str,
+                 method: Callable,
                  k: int,
                  x0: int):
         
@@ -194,14 +188,6 @@ class MixedAdaptativeAnnealingTrainer(Trainer):
         image_kd_loss = - 0.5 * torch.mean(1 + torch.log(sigma_image**2) - mu_image**2 - sigma_image**2)
 
         align_loss = torch.mean((mu_text - mu_image)**2) + torch.mean((sigma_text - sigma_image)**2)
-
-        if self.method == 'linear':
-            weight = linear_kl_annealing_func(step, self.x0)
-
-        elif self.method == 'logistic':
-            weight = logistic_kl_annealing_func(step, self.k, self.x0)
-
-        elif self.method == 'modified':
-            weight = modified_logistic_kl_annealing_func(step, self.k, self.x0)
+        weight = self.method(step=step, k=self.k, x0=self.x0)
 
         return text_model_loss, image_model_loss, text_kd_loss, image_kd_loss, align_loss, weight
