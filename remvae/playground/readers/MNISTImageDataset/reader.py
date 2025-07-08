@@ -14,9 +14,9 @@ class Reader(Dataset):
             transform=transform
         )
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.dataset)
 
-    def __getitem__(self, idx) -> Tensor:
+    def __getitem__(self, idx: int) -> Tensor:
         image, _ = self.dataset[idx]
         return image
