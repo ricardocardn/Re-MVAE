@@ -26,21 +26,24 @@ Podríamos decir que este trabajo se propone con la idea de abarcar los siguient
 
 ## 2. Estructura general del proyecto y módulos principales
 
-El proyecto está diseñado para ser modular, flexible y escalable. A continuación se describen los módulos principales y su utilidad:
+El proyecto está diseñado con una arquitectura modular, flexible y escalable. A continuación se describen los módulos principales del framework:
+
 - **core/**
-Contiene la implementación base del framework:
-  - wrapper.py: Integra y coordina las diferentes modalidades dentro del VAE multimodal.
-  - vae.py: Define el modelo base del Variational Autoencoder, incluyendo funciones de codificación y decodificación.
-  - trainer.py: Módulo responsable del ciclo de entrenamiento, manejo de pérdidas, optimización y métricas.
+Contiene las interfaces y componentes fundamentales del framework. Su propósito es establecer una base común y coherente que asegure la compatibilidad e integración armoniosa entre los distintos módulos:
+
+  - vae.py: Define la interfaz del modelo Variational Autoencoder, incluyendo los métodos de codificación y decodificación.
+  - wrapper.py: Proporciona una clase base que permite extender y personalizar el comportamiento del modelo.
+  - trainer.py: Implementa la lógica de entrenamiento del modelo, incluyendo el ciclo de entrenamiento, cálculo de pérdidas y optimización.
+  - evaluator.py: Define los componentes encargados de evaluar los modelos una vez han sido entrenados, incluyendo métricas y criterios de validación.
     
 - **playground/**
 Siguiendo las interfaces definidas en `core/`, un usuario/investigador puede definir sus propias arquitecturas, datasets y trainers, para poder experimentar con esta aproximación, asegurando la integración de los nuevos componentes con los ya existentes y testeados. Para ello, este módulo está dividido, a su vez, en los siguientes:
 
 	- **architectures/**
 Implementa las arquitecturas específicas para cada modalidad y variantes del modelo:
-  - Encoders y decoders para imágenes (CNNs, autoencoders convolucionales).
-  - Modelos recurrentes para texto (LSTM, GRU, XLSTM).
-  - Wrappers y builders para combinar los módulos en modelos completos.
+  		- Encoders y decoders para imágenes (CNNs, autoencoders convolucionales).
+  		- Modelos recurrentes para texto (LSTM, GRU, XLSTM).
+  		- Wrappers y builders para combinar los módulos en modelos completos.
 
 	- **trainers/**
 Implementa diferentes estrategias y variantes de entrenamiento, incluyendo técnicas avanzadas como annealing o entrenamiento adaptativo para mejorar la convergencia y el alineamiento de representaciones.
@@ -76,11 +79,12 @@ Para este trabajo, se han realizado experimentos basados en los datasets MNIST, 
 - **Image-to-text accuracy**: Utilizando un modelo de clasificacion de imágenes, se calculó el porcentaje de ocasiónes que el texto generado a partir de una imagen contenía la etiqueta correcta de la imagen. Así, esta métrica mide como de buena es la generación de texto es a partir de imágenes, indicando un mejor accuracy mejores descripciones.
 - **Text reconstruction perplexity**: Determina la calidad de las reconstrucciones de las descripciones textuales para el VAE de texto. Permite comprobar que el modelo de lenguaje es capaz de generar muestras con sentido a partir de representaciones latentes. Aunque es similar al MSE en este caso, es especialmente útil para compararla con **Image-to-text perplexity**.
 - **Image-to-text perplexity**: Determina la calidad de las descripciones generadas a partir de imágenes, independientemente de las etiquetas de las mismas. Mide la cohesión de los textos generados, y permite comparar modelos en cuando a generación realista de los textos.
+- **Original text perplexity**: Mide la perplejidad del texto original del dataset, sirviendo como referencia para comparar la calidad de los textos generados.
 
 <div align="center">
   <table border="1" style="border-collapse: collapse; width: 80%;">
     <caption style="font-weight: bold; font-size: 1.2em; margin-bottom: 15px; caption-side: top;">
-      <b>Tabla 1</b>: Comparación de Resultados
+      <b>Tabla 1</b>: Comparación de modelos entrenados con MNIST y Fashion MNIST
     </caption>
     <thead>
       <tr>
@@ -92,23 +96,28 @@ Para este trabajo, se han realizado experimentos basados en los datasets MNIST, 
     <tbody>
       <tr>
         <td style="padding: 10px; border-bottom: 1px solid #ddd;">Text-to-image accuracy</td>
-        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">93.18%</td>
-        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">81.82%</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">76.18%</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">64.06%</td>
       </tr>
       <tr>
         <td style="padding: 10px; border-bottom: 1px solid #ddd;">Image-to-text accuracy</td>
-        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">79.26%</td>
-        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">71.59%</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">82.13%</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">70.25%</td>
       </tr>
       <tr>
         <td style="padding: 10px; border-bottom: 1px solid #ddd;">Text reconstruction PPL</td>
-        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">20.54</td>
-        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">19.07</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">239.65</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">485.07</td>
       </tr>
       <tr>
-        <td style="padding: 10px;">Image-to-text PPL</td>
-        <td style="padding: 10px; text-align: center;">26.27</td>
-        <td style="padding: 10px; text-align: center;">22.84</td>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Image-to-text PPL</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">272.98</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">498.02</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px;">Original text PPL</td>
+        <td style="padding: 10px; text-align: center;">272.18</td>
+        <td style="padding: 10px; text-align: center;">492.34</td>
       </tr>
     </tbody>
   </table>
