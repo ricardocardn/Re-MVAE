@@ -1,11 +1,11 @@
-<h1 align="center">Re-MVAE Framework</h1>
+<h1 align="center">Extensión del framework:<br>explorando nuevas configuraciones</h1>
 
 <br>
 <br>
 
 <div align="justify">
 
-En este directorio se encuentra todo el código fuente necesario para la repetición, planificación y ejecución de experimentos. Cada experimento se define formalmente dentro del directorio `experiments/`.
+A continuación, se describen los pasos necesarios para extender el framework Re-MVAE, permitiendo la incorporación de nuevas arquitecturas, conjuntos de datos, evaluadores y experimentos. Esta guía proporciona las convenciones de estructura, nomenclatura y diseño que deben seguirse para garantizar una integración coherente y funcional dentro del sistema. El objetivo es ofrecer un marco flexible que facilite la experimentación y el desarrollo de nuevas variantes del modelo.
 
 ## 1. Crear una arquitectura
 
