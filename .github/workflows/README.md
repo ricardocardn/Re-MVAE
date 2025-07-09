@@ -1,87 +1,72 @@
-# CI & Experiment Workflow Overview
+# Descripción General del Flujo de Trabajo de CI y Experimentos
 
-This document outlines the two GitHub Actions workflows used in this project:
+Este documento describe los dos flujos de trabajo de GitHub Actions utilizados en este proyecto:
 
 
-## ✅ 1. Run Tests – Continuous Integration (CI)
+## ✅ 1. Ejecutar Pruebas – Integración Continua (CI)
 
-This workflow ensures the quality and correctness of the codebase by running tests on both architectural components and dataset-related modules. It runs automatically on:
-	•	Pushes to main or develop
-	•	Any pull request
+Este flujo de trabajo garantiza la calidad y corrección del código al ejecutar pruebas sobre componentes arquitectónicos y módulos relacionados con conjuntos de datos. Se ejecuta automáticamente en:
+- Push a las ramas main o develop
+- Cualquier pull request
 
-### 🧪 Workflow Breakdown
+### 🧪 Flujo de trabajo
 
-The workflow consists of three jobs:
-	•	Setup
-Prepares the environment by:
-	•	Checking out the repository
-	•	Setting up Python
-	•	Caching pip dependencies
-	•	Test Architectures
-	•	Depends on setup
-	•	Installs dependencies
-	•	Runs tests in tests/architectures/
-	•	Test Datasets
-	•	Depends on setup
-	•	Installs dependencies
-	•	Runs tests in tests/datasets/
+El flujo de trabajo consta de tres tareas (jobs):
+- Configuración (Setup)
+Prepara el entorno mediante:
+  - Clonación del repositorio
+  - Configuración de Python
+  - Caché de dependencias de pip
 
-### ⚙️ CI Workflow Diagram
+- Pruebas de Arquitecturas
+  - Instala dependencias
+  - Ejecuta pruebas en tests/architectures/
 
+- Pruebas de Conjuntos de Datos
+  - Instala dependencias
+  - Ejecuta pruebas en tests/datasets/
+
+### ⚙️ Diagrama del Flujo de Trabajo de CI
+
+```mermaid
 flowchart TD
     subgraph Setup
-      A1["Checkout repository"]
-      A2["Setup Python"]
-      A3["Cache pip"]
+      A1["Clonar repositorio"]
+      A2["Configurar Python"]
+      A3["Caché de pip"]
     end
 
-    subgraph Test_Architectures
-      B1["Checkout repository"]
-      B2["Setup Python"]
-      B3["Restore pip cache"]
-      B4["Install dependencies"]
-      B5["Run architecture tests"]
+    subgraph Pruebas_Arquitecturas
+      B1["Instalar dependencias"]
+      B2["Ejecutar pruebas de arquitecturas"]
     end
 
-    subgraph Test_Datasets
-      C1["Checkout repository"]
-      C2["Setup Python"]
-      C3["Restore pip cache"]
-      C4["Install dependencies"]
-      C5["Run dataset tests"]
+    subgraph Pruebas_Datasets
+      C1["Instalar dependencias"]
+      C2["Ejecutar pruebas de datasets"]
     end
 
     A1 --> A2 --> A3
-    A3 --> B1 --> B2 --> B3 --> B4 --> B5
-    A3 --> C1 --> C2 --> C3 --> C4 --> C5
+    A3 --> B1 --> B2
+    A3 --> C1 --> C2
+```
 
 
+## 🚀 2. Ejecutar Flujo de Trabajo de Experimentos
 
-## 🚀 2. Run Experiment Workflow
+Este flujo de trabajo se ejecuta automáticamente con cada push a main. Está diseñado para automatizar el proceso de configuración y ejecución de experimentos.
 
-This workflow runs automatically on every push to main. It is designed to automate the process of configuring and executing experiments.
+### ⚙️ Diagrama del Flujo de Trabajo de CI
 
-### 🔁 Workflow Steps
-	•	Checkout Repository
-Pulls the latest code.
-	•	Set up Python
-Uses Python 3.12.
-	•	Install Dependencies
-Installs all Python requirements.
-	•	Generate Experiment
-Runs a Python script that generates experiment configuration based on an args.json file.
-	•	Run Experiment
-Navigates to the experiment folder and executes the experiment via execute.sh.
-
-### ⚙️ Experiment Workflow Diagram
-
+```mermaid
 flowchart TD
-    subgraph Run_Experiment
-      E1["Checkout repository"]
-      E2["Setup Python 3.12"]
-      E3["Install dependencies"]
-      E4["Generate experiment config (generate.py)"]
-      E5["Run experiment (execute.sh)"]
+    subgraph Ejecutar_Experimento
+      E1["Clonar repositorio"]
+      E2["Configurar Python 3.12"]
+      E3["Instalar dependencias"]
+      E4["Generar configuración de experimento (generate.py)"]
+      E5["Ejecutar experimento (execute.sh)"]
     end
 
     E1 --> E2 --> E3 --> E4 --> E5
+```
