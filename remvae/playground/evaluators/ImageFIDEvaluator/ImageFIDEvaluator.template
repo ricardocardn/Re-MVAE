@@ -1,0 +1,15 @@
+def evaluate_image_fid(image_model, loader, device, results_dir):
+    print("\nEvaluating Image FID...")
+    evaluator = ImageFIDEvaluator(
+        model=image_model,
+        dataset=loader,
+        device=device,
+        image_size=(56, 56)
+    )
+    fid_rec, fid_gen = evaluator.evaluate()
+    print(f"FID Score for Reconstructed Images (Image Reconstruction): {fid_rec:.2f}")
+    print(f"FID Score for Generated Images (Image Reconstruction): {fid_gen:.2f}")
+    save_metrics({
+        "FID_reconstructed": fid_rec,
+        "FID_generated": fid_gen
+    }, results_dir, "eval_image_fid.json")

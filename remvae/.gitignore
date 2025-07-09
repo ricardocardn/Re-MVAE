@@ -1,0 +1,15 @@
+__pycache__/
+
+models/
+
+playground/readers/**/data/
+
+results_gen/
+results_gen_text/
+results_rec/
+
+experiments/*/readers/
+metrics/
+images/
+
+.DS_Store
