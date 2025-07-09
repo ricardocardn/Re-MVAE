@@ -6,7 +6,7 @@ from dacite import from_dict, Config as DaciteConfig
 from xlstm import xLSTMBlockStackConfig
 
 
-PATH = "tests/architectures/xlstm_seq2seq_bidirectional_autoregressive/"
+PATH = "tests/architectures/x_lstm_seq2seq_bidirectional_autoregressive/"
 
 @pytest.fixture
 def xlstm_config():
