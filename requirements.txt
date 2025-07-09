@@ -1,6 +1,7 @@
 accelerate==1.5.2
 antlr4-python3-runtime==4.9.3
 dacite==1.9.2
+datasets==3.5.0
 debugpy==1.8.13
 decorator==5.2.1
 einops==0.8.1
