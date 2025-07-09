@@ -1,2 +1,0 @@
-from .text_variational_autoencoder import TextVAE
-from .image_variational_autoencoder import ImageVAE

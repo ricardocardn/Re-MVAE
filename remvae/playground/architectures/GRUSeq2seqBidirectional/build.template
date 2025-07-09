@@ -1,8 +1,0 @@
-text_model = TextBuilder().build(
-    vocab_size=len(dataset.tokenizer.vocab),
-    embedding_dim=args["embedding_dim"],
-    hidden_dim=args["hidden_dim"],
-    latent_dim=args["latent_dim"],
-    context_length=args["context_length"],
-    num_layers=1
-)

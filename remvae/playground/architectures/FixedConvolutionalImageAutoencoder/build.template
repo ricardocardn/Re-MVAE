@@ -1,3 +1,0 @@
-image_model = ImageBuilder().build(
-    args["image_size"], args["input_channels"], args["latent_dim"]
-)
