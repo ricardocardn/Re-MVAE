@@ -4,10 +4,11 @@ import json
 import torch
 import matplotlib.pyplot as plt
 import textwrap
+import seaborn as sns
+from sklearn.manifold import TSNE
 from functools import partial
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
-import torch
 from torchvision import transforms
 
 from playground.readers.CelebAMixedLargeDataset.reader import Reader
@@ -15,6 +16,8 @@ from playground.architectures.ConvolutionalNormImageAutoencoder import Builder a
 from playground.architectures.LSTMSeq2seqBidirectional import Builder as TextBuilder, Wrapper
 
 from playground.helpers.tokenizer import TextTokenizer
+
+
 
 
 def collate_fn(batch, pad_idx, max_len):
@@ -38,7 +41,7 @@ def transform_to_text(output, tokenizer):
     return ' '.join(tokenizer.decode(output.numpy().tolist()[0]))
 
 
-def reconstruct_text_from_image(image_model, text_model, loader, dataset, device, output_dir, image_size):
+def reconstruct_text_from_image(image_model, text_model, loader, dataset, device, output_dir, image_size, input_channels):
     fig, axs = plt.subplots(10, 2, figsize=(10, 40))
     count = 0
 
@@ -54,7 +57,7 @@ def reconstruct_text_from_image(image_model, text_model, loader, dataset, device
             z = image_model.reparametrize(mu, sigma)
             text_recon = text_model.decode(z).argmax(dim=-1)
 
-        recon_img = recon[0].reshape((3, image_size, image_size)).cpu()
+        recon_img = recon[0].reshape((input_channels, image_size, image_size)).cpu()
         desc_text = transform_to_text(desc.cpu(), dataset.tokenizer).split(' <eos>')[0]
         recon_text = transform_to_text(text_recon.cpu(), dataset.tokenizer).split(' <eos>')[0]
 
@@ -76,7 +79,7 @@ def reconstruct_text_from_image(image_model, text_model, loader, dataset, device
     print(f"Image saved at: {path}")
 
 
-def generate_image_from_text(image_model, text_model, loader, dataset, device, output_dir, image_size, images=10):
+def generate_image_from_text(image_model, text_model, loader, dataset, device, output_dir, image_size, input_channels, images=10):
     for sample in range(images):
         count = 0
         fig, axs = plt.subplots(2, 5, figsize=(25, 20))
@@ -93,7 +96,7 @@ def generate_image_from_text(image_model, text_model, loader, dataset, device, o
                 z = text_model.reparametrize(mu, sigma)
                 img_recon = image_model.decode(z)
 
-            b = img_recon[0].reshape((3, image_size, image_size)).cpu()
+            b = img_recon[0].reshape((input_channels, image_size, image_size)).cpu()
             desc_text = transform_to_text(desc.cpu(), dataset.tokenizer).split(' <eos>')[0]
             wrapped_text = "\n".join(textwrap.wrap(f"Prompt: {desc_text}", width=30))
 
@@ -110,7 +113,7 @@ def generate_image_from_text(image_model, text_model, loader, dataset, device, o
         print(f"Image saved at: {path}")
 
 
-def interpolate_images(image_model, loader, device, output_dir, image_size, rows=5, cols=10):
+def interpolate_images(image_model, loader, device, output_dir, image_size, input_channels, rows=5, cols=10):
     fig, axs = plt.subplots(rows, cols, figsize=(30, 15))
     fig.subplots_adjust(hspace=0.4, wspace=0.2)
     axs = axs.flatten()
@@ -135,8 +138,7 @@ def interpolate_images(image_model, loader, device, output_dir, image_size, rows
             z1 = image_model.reparametrize(mu1, sigma1)
             z2 = image_model.reparametrize(mu2, sigma2)
 
-            n_steps = cols - 2
-            alphas = torch.linspace(0, 1, n_steps + 2)
+            alphas = torch.linspace(0, 1, cols)
 
             for col, alpha in enumerate(alphas):
                 ax = axs[row * cols + col]
@@ -151,10 +153,9 @@ def interpolate_images(image_model, loader, device, output_dir, image_size, rows
                     z_interp = (1 - alpha) * z1 + alpha * z2
                     img_interp = image_model.decode(z_interp)
                     img_to_show = img_interp[0]
-
                     title = f"α={alpha:.2f}"
 
-                img_to_show = img_to_show.reshape((3, image_size, image_size))
+                img_to_show = img_to_show.reshape((input_channels, image_size, image_size))
                 ax.imshow(img_to_show.permute(1, 2, 0).detach().cpu().numpy())
                 ax.axis('off')
 
@@ -207,15 +208,10 @@ def main():
     )
 
     image_model = ImageBuilder().build(
-        args["image_size"],
-        3,
-        args["latent_dim"],
-        conv_dims=args.get("conv_dims", None)
+        args["image_size"], args["input_channels"], args["latent_dim"], args["conv_dims"]
     )
-
-    vocab_size = len(dataset.tokenizer.vocab)
     text_model = TextBuilder().build(
-        vocab_size=vocab_size,
+        vocab_size=len(dataset.tokenizer.vocab),
         embedding_dim=args["embedding_dim"],
         hidden_dim=args["hidden_dim"],
         latent_dim=args["latent_dim"],
@@ -238,9 +234,9 @@ def main():
     output_dir = os.path.join(os.path.dirname(args_path), 'images')
     os.makedirs(output_dir, exist_ok=True)
 
-    reconstruct_text_from_image(image_model, text_model, loader, dataset, device, output_dir, args["image_size"])
-    generate_image_from_text(image_model, text_model, loader, dataset, device, output_dir, args["image_size"])
-    interpolate_images(image_model, loader, device, output_dir, args["image_size"])
+    reconstruct_text_from_image(image_model, text_model, loader, dataset, device, output_dir, args["image_size"], args["input_channels"])
+    generate_image_from_text(image_model, text_model, loader, dataset, device, output_dir, args["image_size"], args["input_channels"])
+    interpolate_images(image_model, loader, device, output_dir, args["image_size"], args["input_channels"])
 
 
 if __name__ == "__main__":

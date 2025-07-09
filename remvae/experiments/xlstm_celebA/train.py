@@ -1,7 +1,12 @@
 import json
+
 import sys
+import os
+import time
+
 import torch
 import torch.nn as nn
+
 from functools import partial
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
@@ -10,7 +15,8 @@ from torchvision import transforms
 from playground.readers.CelebAMixedLargeDataset.reader import Reader
 from playground.architectures.ConvolutionalNormImageAutoencoder import Builder as ImageBuilder
 from playground.architectures.xLSTMSeq2seqBidirectionalAutoregressive import Builder as TextBuilder, Wrapper
-from playground.trainers import MixedAdaptativennealingTrainer
+from playground.trainers import MixedAdaptativeAnnealingTrainer
+from playground.helpers.annealing import scaled_logistic_kl_annealing_func
 
 from omegaconf import OmegaConf
 from dacite import from_dict, Config as DaciteConfig
@@ -53,21 +59,11 @@ loader = DataLoader(
 
 
 image_model = ImageBuilder().build(
-    args["image_size"], 3, args["latent_dim"], conv_dims=args["conv_dims"]
+    args["image_size"], args["input_channels"], args["latent_dim"], args["conv_dims"]
 )
-
-path = 'experiments/xlstm_celebA/configs/'
-
-def get_config(file):
-    cfg = ''
-    with open(path + file, 'r') as f:
-        cfg += f.read()
-
-    cfg = OmegaConf.create(cfg)
-    return from_dict(data_class=xLSTMBlockStackConfig, data=OmegaConf.to_container(cfg), config=DaciteConfig(strict=True))
-
-encoder_config = get_config('encoder.yml')
-decoder_config = get_config('decoder.yml')
+path = args["config_path"]
+encoder_config = from_dict(data_class=xLSTMBlockStackConfig, data=OmegaConf.to_container(OmegaConf.create(open(path + '/encoder.yml', 'r').read())), config=DaciteConfig(strict=True))
+decoder_config = from_dict(data_class=xLSTMBlockStackConfig, data=OmegaConf.to_container(OmegaConf.create(open(path + '/decoder.yml', 'r').read())), config=DaciteConfig(strict=True))
 
 builder = TextBuilder()
 text_model = builder.build(
@@ -79,34 +75,52 @@ text_model = builder.build(
 
 wrapper = Wrapper(text_model)
 
-
 params = list(image_model.parameters()) + list(text_model.parameters())
 optimizer = torch.optim.Adam(params, lr=1e-3, betas=(0.5, 0.999), weight_decay=1e-5)
+text_criteria = nn.CrossEntropyLoss(ignore_index=pad_idx, reduction='mean')
+image_criteria = nn.BCELoss(reduction='mean')
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 image_model.to(device)
 text_model.to(device)
 
-trainer = MixedAdaptativennealingTrainer(
-    wrapper,
-    image_model,
-    nn.CrossEntropyLoss(ignore_index=pad_idx, reduction='mean'),
-    nn.BCELoss(reduction='mean'),
-    optimizer,
+trainer = MixedAdaptativeAnnealingTrainer(
+    textVAE=wrapper,
+    imageVAE=image_model,
+    text_criteria=text_criteria,
+    image_criteria=image_criteria,
+    optimizer=optimizer,
     epochs=args["epochs"],
-    latent_dim=args["latent_dim"],
-    weights=args["weights"],
-    method="modified",
-    k=args["k"],
-    x0=args["x0"]
+    latent_dim=args.get("latent_dim"),
+    weights=args.get("weights"),
+    method=scaled_logistic_kl_annealing_func,
+    k=args.get("k"),
+    x0=args.get("x0")
 )
 
+start_time = time.time()
 _, _, metrics = trainer.train(
-    loader,
-    device,
+    dataset=loader,
+    device=device,
     return_metrics=True,
     results_dir=args["results_dir"],
     checkpoint_dir=args["checkpoint_dir"],
-    checkpoint_steps=args["checkpoint_steps"],
-    teacher_forcing=args["teacher_forcing_ratio"]
+    checkpoint_steps=args["checkpoint_steps"]
 )
+
+end_time = time.time()
+elapsed_time = end_time - start_time
+
+metrics_dir = os.path.join(args["results_dir"], "metrics")
+metrics_path = os.path.join(metrics_dir, "training_metrics.json")
+time_path = os.path.join(metrics_dir, "time")
+
+os.makedirs(metrics_dir, exist_ok=True)
+
+with open(metrics_path, 'w') as f:
+    json.dump(metrics, f, indent=4)
+
+with open(time_path, 'w') as f:
+    f.write(str(elapsed_time))
+
+print(f"Metrics saved at {metrics_path}")

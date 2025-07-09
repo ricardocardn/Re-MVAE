@@ -6,22 +6,13 @@ from torchvision import transforms
 
 from playground.readers.CelebAMixedLargeDataset.reader import Reader
 from playground.architectures.ConvolutionalNormImageAutoencoder import Builder as ImageBuilder
-from playground.architectures.xLSTMSeq2seqBidirectionalAutoregressive import Builder as TextBuilder
-from playground.evaluators import MixedFIDEvaluator, ImageFIDEvaluator
+from playground.architectures.xLSTMSeq2seqBidirectionalAutoregressive import Builder as TextBuilder, Wrapper
+from playground.evaluators import (MixedFIDEvaluator, MixedPerplexityEvaluator)
 from playground.helpers.tokenizer import TextTokenizer
 
 from omegaconf import OmegaConf
 from dacite import from_dict, Config as DaciteConfig
 from xlstm import xLSTMBlockStackConfig
-
-
-def get_config(path, file):
-    cfg = ''
-    with open(path + file, 'r') as f:
-        cfg += f.read()
-
-    cfg = OmegaConf.create(cfg)
-    return from_dict(data_class=xLSTMBlockStackConfig, data=OmegaConf.to_container(cfg), config=DaciteConfig(strict=True))
 
 
 def load_models_and_data(args_path):
@@ -40,16 +31,13 @@ def load_models_and_data(args_path):
     loader = DataLoader(dataset, batch_size=1, shuffle=False)
 
     image_model = ImageBuilder().build(
-        image_size=args["image_size"],
-        input_channels=3,
-        latent_dim=args["latent_dim"],
-        conv_dims=args.get("conv_dims", None)
+        args["image_size"], args["input_channels"], args["latent_dim"], args["conv_dims"]
     )
 
-    path = 'experiments/xlstm_celebA/configs/'
-    encoder_config = get_config(path, 'encoder.yml')
-    decoder_config = get_config(path, 'decoder.yml')
-
+    path = args["config_path"]
+    encoder_config = from_dict(data_class=xLSTMBlockStackConfig, data=OmegaConf.to_container(OmegaConf.create(open(path + '/encoder.yml', 'r').read())), config=DaciteConfig(strict=True))
+    decoder_config = from_dict(data_class=xLSTMBlockStackConfig, data=OmegaConf.to_container(OmegaConf.create(open(path + '/decoder.yml', 'r').read())), config=DaciteConfig(strict=True))
+    
     builder = TextBuilder()
     text_model = builder.build(
         vocab_size=len(dataset.tokenizer.vocab),
@@ -58,23 +46,43 @@ def load_models_and_data(args_path):
         decoder_config=decoder_config
     )
 
+    wrapper = Wrapper(text_model)
+
     checkpoint_base = args["checkpoint_dir"]
+    dirs = [os.path.join(checkpoint_base, d) for d in os.listdir(checkpoint_base)]
+    dirs = [d for d in dirs if os.path.isdir(d)]
+
     checkpoint_path = sorted(
-        [os.path.join(checkpoint_base, d) for d in os.listdir(checkpoint_base)],
+        dirs,
         key=lambda x: os.path.getmtime(x),
         reverse=True
     )[0]
 
-    image_model.load_state_dict(torch.load(os.path.join(checkpoint_path, 'image_model.pth'), map_location=device))
-    text_model.load_state_dict(torch.load(os.path.join(checkpoint_path, 'language_model.pth'), map_location=device))
+    image_model.load_state_dict(torch.load(
+        os.path.join(checkpoint_path, 'image_model.pth'),
+        map_location=device
+    ))
+
+    text_model.load_state_dict(torch.load(
+        os.path.join(checkpoint_path, 'language_model.pth'),
+        map_location=device
+    ))
 
     image_model.to(device).eval()
     text_model.to(device).eval()
 
-    return image_model, text_model, dataset, loader, device
+    return args, image_model, text_model, dataset, loader, device
 
 
-def evaluate_mixed_fid(image_model, text_model, loader, device):
+def save_metrics(metrics, results_dir, filename):
+    metrics_dir = os.path.join(results_dir, "metrics")
+    os.makedirs(metrics_dir, exist_ok=True)
+    path = os.path.join(metrics_dir, filename)
+    with open(path, 'w') as f:
+        json.dump(metrics, f, indent=4)
+    print(f"Saved metrics to {path}")
+
+def evaluate_mixed_fid(image_model, text_model, loader, device, results_dir):
     print("\nEvaluating Mixed FID...")
     evaluator = MixedFIDEvaluator(
         image_model=image_model,
@@ -86,27 +94,39 @@ def evaluate_mixed_fid(image_model, text_model, loader, device):
     fid_rec, fid_gen = evaluator.evaluate()
     print(f"FID Score for Reconstructed Images (Image Generation): {fid_rec:.2f}")
     print(f"FID Score for Generated Images (Image Generation): {fid_gen:.2f}")
+    save_metrics({
+        "FID_reconstructed": fid_rec,
+        "FID_generated": fid_gen
+    }, results_dir, "eval_mixed_fid.json")
 
-
-def evaluate_image_fid(image_model, loader, device):
-    print("\nEvaluating Image FID...")
-    evaluator = ImageFIDEvaluator(
-        model=image_model,
-        dataset=loader,
-        device=device,
-        image_size=(56, 56)
+def evaluate_perplexity(image_model, text_model, loader, tokenizer, device, results_dir):
+    print("\nEvaluating Mixed Perplexity...")
+    evaluator = MixedPerplexityEvaluator(
+        image_model, text_model, loader, tokenizer, device=device
     )
-    fid_rec, fid_gen = evaluator.evaluate()
-    print(f"FID Score for Reconstructed Images (Image Reconstruction): {fid_rec:.2f}")
-    print(f"FID Score for Generated Images (Image Reconstruction): {fid_gen:.2f}")
+
+    image_to_text_perp, text_to_image_perp, original_text_perp = evaluator.evaluate()
+
+    print(f"Image-to-text perplexity: {round(image_to_text_perp, 2)}")
+    print(f"Text reconstruction perplexity: {round(text_to_image_perp, 2)}")
+    print(f"Original text perplexity: {round(original_text_perp, 2)}")
+
+    save_metrics({
+        "image_to_text_perplexity": image_to_text_perp,
+        "text_to_image_perplexity": text_to_image_perp,
+        "original_text_perplexity": original_text_perp
+    }, results_dir, "eval_mixed_perplexity.json")
+
 
 
 def main():
     args_path = "args.json"
-    image_model, text_model, dataset, loader, device = load_models_and_data(args_path)
+    args, image_model, text_model, dataset, loader, device = load_models_and_data(args_path)
 
-    evaluate_mixed_fid(image_model, text_model, loader, device)
-    evaluate_image_fid(image_model, loader, device)
+    evaluate_mixed_fid(image_model, text_model, loader, device, args["results_dir"])
+
+    evaluate_perplexity(image_model, text_model, loader, dataset.tokenizer, device, args["results_dir"])
+
 
 
 if __name__ == "__main__":

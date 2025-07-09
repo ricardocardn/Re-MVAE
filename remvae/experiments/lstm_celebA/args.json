@@ -6,8 +6,14 @@
     "tokenizer_path": "../../models/lstm_celebA/tokenizer.pkl",
     "dataset_length": 128,
     "image_size": 128,
+    "input_channels": 3,
     "latent_dim": 512,
-    "conv_dims": [256, 128, 64, 32],
+    "conv_dims": [
+        256,
+        128,
+        64,
+        32
+    ],
     "embedding_dim": 64,
     "hidden_dim": 64,
     "context_length": 45,
@@ -16,11 +22,11 @@
     "trainer": "MixedAdaptativeAnnealingTrainer",
     "training_method": "scaled_logistic_kl_annealing_func",
     "weights": {
-      "text_model_loss": 10,
-      "image_model_loss": 1000,
-      "text_kd_loss": 1,
-      "image_kd_loss": 30,
-      "align_loss": 10
+        "text_model_loss": 10,
+        "image_model_loss": 1000,
+        "text_kd_loss": 1,
+        "image_kd_loss": 30,
+        "align_loss": 10
     },
     "teacher_forcing_ratio": 0.5,
     "k": 0.0007,

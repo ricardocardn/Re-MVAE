@@ -3,13 +3,18 @@
     "reader": "CelebAMixedLargeDataset",
     "text_architecture": "xLSTMSeq2seqBidirectionalAutoregressive",
     "image_architecture": "ConvolutionalNormImageAutoencoder",
-    "config_path": "../../experiments/example/configs",
+    "config_path": "../../experiments/xlstm_celebA/configs",
     "tokenizer_path": "../../models/xlstm_celebA/tokenizer.pkl",
     "dataset_length": 128,
     "image_size": 128,
     "input_channels": 3,
     "latent_dim": 512,
-    "conv_dims": [256, 128, 64, 32],
+    "conv_dims": [
+        256,
+        128,
+        64,
+        32
+    ],
     "embedding_dim": 64,
     "hidden_dim": 64,
     "context_length": 45,
@@ -28,7 +33,7 @@
     "x0": 1000,
     "results_dir": "../../experiments/xlstm_celebA",
     "checkpoint_dir": "../../models/xlstm_celebA",
-    "checkpoint_steps": 3000,
+    "checkpoint_steps": 1,
     "evaluators": [
         "MixedFIDEvaluator",
         "MixedPerplexityEvaluator"

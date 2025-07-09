@@ -13,16 +13,13 @@ def read_build_template(path: str):
         return ""
 
 
-def indent_block(text: str, base_indent: int = 4, indent_increment: int = 4):
+def indent_block(text: str, base_indent: int = 4):
     lines = text.splitlines()
     if not lines:
         return ''
-    indented_lines = []
-    for i, line in enumerate(lines):
-        if i == 0:
-            indented_lines.append(' ' * base_indent + line.strip())
-        else:
-            indented_lines.append(' ' * (base_indent + indent_increment) + line.strip())
+    indent = ' ' * base_indent
+    
+    indented_lines = [indent + line for line in lines]
     return '\n'.join(indented_lines) + '\n'
 
 

@@ -1,20 +1,6 @@
 path = args["config_path"]
-
-encoder_config = from_dict(
-    data_class=xLSTMBlockStackConfig,
-    data=OmegaConf.to_container(
-        OmegaConf.create(open(path + '/encoder.yml', 'r').read())
-    ),
-    config=DaciteConfig(strict=True)
-)
-
-decoder_config = from_dict(
-    data_class=xLSTMBlockStackConfig,
-    data=OmegaConf.to_container(
-        OmegaConf.create(open(path + '/decoder.yml', 'r').read())
-    ),
-    config=DaciteConfig(strict=True)
-)
+encoder_config = from_dict(data_class=xLSTMBlockStackConfig, data=OmegaConf.to_container(OmegaConf.create(open(path + '/encoder.yml', 'r').read())), config=DaciteConfig(strict=True))
+decoder_config = from_dict(data_class=xLSTMBlockStackConfig, data=OmegaConf.to_container(OmegaConf.create(open(path + '/decoder.yml', 'r').read())), config=DaciteConfig(strict=True))
 
 builder = TextBuilder()
 text_model = builder.build(
