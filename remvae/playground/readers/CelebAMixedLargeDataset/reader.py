@@ -126,8 +126,8 @@ class Reader(Dataset):
         return " ".join(phrases) + " <eos>"
     
     def __get_intro(self, attr_dict):
-        man = ['A man', 'This man', 'A picture of  man']
-        woman = ['A woman', 'This woman', 'A picture of  woman']
+        man = ['A man', 'This man', 'A picture of man']
+        woman = ['A woman', 'This woman', 'A picture of woman']
         idx = random.randint(0, len(man) - 1)
         return (man[idx], 0) if attr_dict["Male"] == 1 else (woman[idx], 1)
     
