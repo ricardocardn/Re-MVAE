@@ -4,7 +4,7 @@ import argparse
 from jinja2 import Environment, FileSystemLoader
 
 
-def read_build_template(path: str):
+def read_build_template(path: str) -> str:
     try:
         with open(path, 'r') as f:
             content = f.read()
@@ -13,7 +13,7 @@ def read_build_template(path: str):
         return ""
 
 
-def indent_block(text: str, base_indent: int = 4):
+def indent_block(text: str, base_indent: int = 4) -> str:
     lines = text.splitlines()
     if not lines:
         return ''
@@ -23,7 +23,7 @@ def indent_block(text: str, base_indent: int = 4):
     return '\n'.join(indented_lines) + '\n'
 
 
-def read_and_indent_call(path: str, indent_spaces: int = 4):
+def read_and_indent_call(path: str, indent_spaces: int = 4) -> str:
     try:
         with open(path, 'r') as f:
             content = f.read()

@@ -11,25 +11,25 @@ class PDF(FPDF):
         self.cell(0, 10, 'Training Report', ln=True, align='C')
         self.ln(5)
 
-    def add_section_title(self, title):
+    def add_section_title(self, title: str):
         self.set_font('Arial', 'B', 14)
         self.set_text_color(0, 70, 140)
         self.cell(0, 10, title, ln=True)
         self.ln(4)
 
-    def add_image(self, image_path, w=140):
+    def add_image(self, image_path: str, w=140):
         page_width = self.w - self.l_margin - self.r_margin
         x = self.l_margin + (page_width - w) / 2
         self.image(image_path, x=x, w=w)
         self.ln(10)
 
-    def add_text(self, text):
+    def add_text(self, text: str):
         self.set_font('Arial', '', 12)
         self.set_text_color(50, 50, 50)
         self.multi_cell(0, 10, text)
         self.ln(5)
 
-    def add_table(self, data_dict):
+    def add_table(self, data_dict: str):
         self.set_font('Arial', '', 12)
         self.set_fill_color(240, 240, 240)
         self.set_text_color(0, 0, 0)
@@ -78,7 +78,7 @@ class PDF(FPDF):
 
             self.set_y(y + cell_height)
 
-    def get_num_lines(self, text, width):
+    def get_num_lines(self, text: str, width: int):
         if not text:
             return 1
         words = text.split()
