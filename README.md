@@ -11,6 +11,15 @@
 
 Este repositorio forma parte del Trabajo de Fin de Grado titulado: **Estudio acerca del entrenamiento con alineamiento de representaciones multimodales en el espacio latente**. El objetivo principal es lograr un alineamiento multimodal efectivo basado en Variational Autoencoders (VAE), con el fin de construir espacios latentes estructurados y manejables que permitan la generación cruzada entre modalidades (por ejemplo, generar texto a partir de imágenes y viceversa).
 
+```bibtex
+@OTHER{
+	10553_143106,
+	author = {Ricardo Juan Cárdenes Pérez},
+	title = {Estudio acerca del entrenamiento con alineamiento de representaciones multimodales en el espacio latente},
+	year = {2025},
+}
+```
+
 Este trabajo extiende la idea tradicional de los MVAE (Multimodal VAE) incorporando modelos recurrentes para la modalidad de texto, utilizando RNNs (LSTM, GRU, XLSTM), con el propósito de capturar la secuencialidad inherente a la información textual, mejorando así la calidad y coherencia de las representaciones latentes.
 
 ## 1. Objetivo principal
